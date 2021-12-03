@@ -1,11 +1,8 @@
 # https://adventofcode.com/2021/day/2
 from collections import defaultdict
-from os import path
-from typing import Optional
 
 with open(r"input.txt") as file:
     input = [x.strip() for x in file.readlines()]
-
 
 def find_common(numbers):
     total_numbers = 0
