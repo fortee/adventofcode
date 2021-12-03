@@ -6,6 +6,7 @@ from typing import Optional
 with open(r"input.txt") as file:
     input = [x.strip() for x in file.readlines()]
 
+
 def find_common(numbers):
     total_numbers = 0
     bit_sums = defaultdict(int)
@@ -34,7 +35,7 @@ epsilon_rate_binary = ''.join(least_common_list)
 print(f"Part 1 solution: {int(gamma_rate_binary, 2) * int(epsilon_rate_binary, 2)}")
 
 # Part2
-def get_it(bits, numbers, idx, get_most=True):
+def filter_numbers(bits, numbers, idx, get_most_common=True):
     if len(numbers) == 1:
         return False, numbers
     new_numbers = []
@@ -43,19 +44,20 @@ def get_it(bits, numbers, idx, get_most=True):
         if number[idx] == co2_bit:
             new_numbers.append(number)
     most, least = find_common(new_numbers)
-    return most if get_most else least, new_numbers
+    return most if get_most_common else least, new_numbers
 
 
 # Set the defaults
 o2_valid_bits = most_common_list
 co2_valid_bits = least_common_list
 o2_valid_numbers = co2_valid_numbers = input
-number_of_bits = len(most_common_list)
 
 # Loop trough each number index
-for idx in range(number_of_bits):
+for idx in range(len(most_common_list)):
     # print(f"co2_valid_bits: {co2_valid_bits} co2_valid_numbers: {co2_valid_numbers} bit: {o2_valid_bits[idx]}")
-    o2_valid_bits, o2_valid_numbers = get_it(o2_valid_bits, o2_valid_numbers, idx)
-    co2_valid_bits, co2_valid_numbers = get_it(co2_valid_bits, co2_valid_numbers, idx, get_most=False)
+    o2_valid_bits, o2_valid_numbers = filter_numbers(o2_valid_bits, o2_valid_numbers, idx)
+    co2_valid_bits, co2_valid_numbers = filter_numbers(
+        co2_valid_bits, co2_valid_numbers, idx, get_most_common=False
+    )
 
 print(f"Part 2 solution: {int(o2_valid_numbers[0], 2) * int(co2_valid_numbers[0], 2)}")
