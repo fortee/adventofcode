@@ -18,11 +18,14 @@ with open(r"input.txt") as file:
         for i in range(line_length + 1):
 
             # Find in which way we need to move
-            x_mod = i if start[0] < end[0] else 0 if start[0] == end[0] else -i
-            y_mod = i if start[1] < end[1] else 0 if start[1] == end[1] else -i
+            # If Start X < End X, move in positive direction
+            # If Start X == End X, don't move
+            # If Start X > End X, move in negative direction
+            # [0, 1] represents [x, y]
+            mods = [i if start[x] < end[x] else 0 if start[x] == end[x] else -i for x in [0, 1]]
 
             # Set the point coordinates
-            point = (start[0] + x_mod, start[1] + y_mod)
+            point = (start[0] + mods[0], start[1] + mods[1])
 
             if start[0] == end[0] or start[1] == end[1]:
                 # Part 1 onlty needs horizontal and vertical lines
@@ -53,6 +56,5 @@ with open(r"input.txt") as file:
     for idx, line_points in enumerate([straight_line_points, all_line_points]):
         # Find point where the lines crossed more than once
         points = [point for point, qty in line_points.items() if qty >= 2]
-        print(f"")
         print(f"Part {idx+1} solution: {len(points)}")
-        draw(line_points)
+        # draw(line_points)
