@@ -1,4 +1,4 @@
-# https://adventofcode.com/2021/day/3
+# https://adventofcode.com/2021/day/5
 from collections import defaultdict
 
 with open(r"input.txt") as file:
