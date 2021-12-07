@@ -1,7 +1,4 @@
 # https://adventofcode.com/2021/day/6
-from datetime import datetime
-from math import floor
-from os import path
 
 with open(r"input.txt") as file:
     all_fish = [int(x) for x in file.readline().split(',')]
