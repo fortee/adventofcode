@@ -1,39 +1,40 @@
 # https://adventofcode.com/2021/day/6
+from datetime import datetime
 from math import floor
+from os import path
 
 with open(r"input.txt") as file:
     all_fish = [int(x) for x in file.readline().split(',')]
-original_fish = all_fish.copy()
 
-print(f"Initial state:  {all_fish}")
+for part, days in enumerate([80, 256]):
+    known_spawns = {}
+    def spawn_fish(fish, birthday):
+        """
+        Find the amount of spawned fish based on the fish value and it's birth date
+        """
+        combination = (fish, birthday)  # Tuple to identify the fish birthday combo
 
-spawn_counter = [0 for x in all_fish]
+        if combination in known_spawns:
+            # If we already encountered this combination, just return it's value
+            # Dynamic proghraming ftw
+            return known_spawns[combination]
 
-days = 18
-total_spawns = 0
-for day in range(days):
-    spawned_fish = []
-    daily_fish = []
-    for idx, fish in enumerate(all_fish):
-        new = fish - 1 if fish > 0 else 6
-        daily_fish.append(new)
-        if fish == 0:
-            spawned_fish.append(8)
-    all_fish = daily_fish + spawned_fish
-    # print(f"After {day+1:3} days: {spawn_counter} | {all_fish} | Spawned Fish: {total_spawns}")
-print(f"Slow  solution: {len(all_fish)} | Spawned Fish: {total_spawns}")
+        total = 1
 
+        # The first day this fish will spawn
+        spawn_date = fish + birthday + 1
 
-print(f"")
-spawn_rate = 7
-spawned_fish = 0
-news_fishes = original_fish.copy()
-for day in range(days):
-    for fish in news_fishes:
-        remainder = spawn_rate - 1 - fish
-        adjusted_days = remainder + day
-        cycles = adjusted_days / spawn_rate
-        spawned_fish += floor(cycles)
-        # print(f"N: {fish} R: {remainder} A: {adjusted_days} C: {cycles} R: {n}")
-result = len(original_fish) + spawned_fish
-print(f"Quick solution: {result} | Spawned Fish: {spawned_fish}")
+        # Iterate until the max number of days
+        while spawn_date <= days:
+            # Recursion to find how many the spawned fish will spawn
+            total += spawn_fish(8, spawn_date)
+            spawn_date += 7
+
+        # Save this value so we can look it up in the future
+        known_spawns[combination] = total
+        return total
+
+    total_fish = 0
+    for fish in all_fish:
+        total_fish += spawn_fish(fish, 0)
+    print(f"Part {part+1}: {total_fish}")
