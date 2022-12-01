@@ -7,6 +7,8 @@ if (dayNumber === undefined) {
   throw "You need to pass the day number as integer argument. ex. --day=1";
 }
 
+import { getInput } from "./utils/input";
+
 // Represents if we should use the normal or example inputs
 const exampleInput =
   process.env.npm_config_example_input === undefined ? false : true;
@@ -14,8 +16,12 @@ const exampleInput =
 // Import the given day's solution file and run the `solve` function on it
 import(`./day${dayNumber}/solution.js`)
   .then((object) => {
+    const input: string = getInput({
+      dayNumber: dayNumber,
+      example: exampleInput,
+    });
     // Run the solve() function to get the given day's solution
-    object.solve(dayNumber, exampleInput);
+    object.solve(input, dayNumber);
   })
   .catch((error) =>
     // Something is wrong

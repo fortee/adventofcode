@@ -1,15 +1,8 @@
-import { getInput } from "../utils/input";
-
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
- * @param dayNumber - Represent the number of the day this solution is for
- * @param exampleInput - Should we use the real or example input
+ * @param input - `raw` string content of the input file
  */
-export async function solve(dayNumber: string, exampleInput: boolean) {
-  const input: string = getInput({
-    dayNumber: dayNumber,
-    example: exampleInput,
-  });
+export async function solve(input: string, dayNumber: string) {
   console.log(`---- Day ${dayNumber} ----`);
 
   // Split the string to an array of integers based on new lines.

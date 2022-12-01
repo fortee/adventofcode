@@ -5,7 +5,9 @@ import { readFileSync } from "fs";
  * The options we accept for the getInput() method
  */
 type getInputOptions = {
+  // Represent the number of the day this solution is for
   dayNumber: string;
+  //  Should we use the real or example input
   example: boolean;
 };
 
