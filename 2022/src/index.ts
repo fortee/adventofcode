@@ -1,16 +1,23 @@
-// Read in the npm attribute to get the day number we need to run
+// Read in the npm attributes
+
+// Represents the number of the day we should run
 const dayNumber = process.env.npm_config_number;
 if (dayNumber === undefined) {
+  // Make this attribute required
   throw "You need to pass the day number as integer argument. ex. --day=1";
 }
-const exampleInput = process.env.npm_config_example_input === undefined ? false : true;
 
+// Represents if we should use the normal or example inputs
+const exampleInput =
+  process.env.npm_config_example_input === undefined ? false : true;
 
-// Import the given day file and run the `solve` function on it
+// Import the given day's solution file and run the `solve` function on it
 import(`./day${dayNumber}/solution.js`)
   .then((object) => {
-    object.solve(dayNumber, exampleInput); // Hello!
+    // Run the solve() function to get the given day's solution
+    object.solve(dayNumber, exampleInput);
   })
   .catch((error) =>
-    console.log(`Could not run solver for Day ${dayNumber} | Error: ${error}`)
+    // Something is wrong
+    console.error(`Could not run solver for Day ${dayNumber} | Error: ${error}`)
   );

@@ -1,27 +1,43 @@
 import { getInput } from "../utils/input";
 
-export async function solve(dayNumber: string, exampleInput:boolean) {
+/**
+ * Main function to trigger all functionality needed to solve the daily challenge
+ * @param dayNumber - Represent the number of the day this solution is for
+ * @param exampleInput - Should we use the real or example input
+ */
+export async function solve(dayNumber: string, exampleInput: boolean) {
   const input: string = getInput({
     dayNumber: dayNumber,
     example: exampleInput,
   });
   console.log(`---- Day ${dayNumber} ----`);
 
-  // Split the string to an array of integers based on new lines
+  // Split the string to an array of integers based on new lines.
+  // Use `null` on empty line (a.k.a new elf)
   const inputArray = input.split("\n").map((x) => (x === "" ? null : +x));
 
   // Solve Part1&2
   await allParts(inputArray);
 }
 
+/**
+ * Elf calories
+ * @param input - The Puzzle input
+ */
 async function allParts(input: (number | null)[]) {
   const totals: number[] = [];
   let currentTotal = 0;
+
+  // Loop through all elements
+  // add up block for each elf
+  // Start new total for each elf
   input.forEach((element) => {
     if (element === null) {
+      // `null` represents that a new Elf's block is starting
       totals.push(currentTotal);
       currentTotal = 0;
     } else {
+      // Count the calories
       currentTotal += element;
     }
   });
@@ -32,7 +48,7 @@ async function allParts(input: (number | null)[]) {
   // First element is the highest value
   console.log(`Part1: ${totalSorted[0]}`);
 
-  // Splice to the first highest elements than get `sum` with reduce
+  // Splice to the first 3 highest elements than get `sum` with reduce
   console.log(
     `Part2: ${totalSorted.slice(0, 3).reduce((sum, x) => sum + x, 0)}`
   );
