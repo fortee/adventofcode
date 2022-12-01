@@ -1,9 +1,9 @@
 import { getInput } from "../utils/input";
 
-export async function solve(dayNumber: string) {
+export async function solve(dayNumber: string, exampleInput:boolean) {
   const input: string = getInput({
     dayNumber: dayNumber,
-    example: false,
+    example: exampleInput,
   });
   console.log(`---- Day ${dayNumber} ----`);
 
