@@ -1,0 +1,25 @@
+{
+  "name": "AOC 2022",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./build/index.js",
+  "scripts": {
+    "clean": "rimraf build",
+    "build": "npm run clean && tsc -p tsconfig.json",
+    "start-dev": "tsc-watch --noClear -p ./tsconfig.json --onSuccess \"node ./build/day1.js\""
+  },
+  "keywords": [
+    "Advent of code",
+    "AOC"
+  ],
+  "author": "",
+  "private": true,
+  "license": "ISC",
+  "devDependencies": {},
+  "devDependencies": {
+    "rimraf": "^3.0.2",
+    "ts-node": "^10.2.1",
+    "tsc-watch": "^4.4.0",
+    "typescript": "^4.8.4"
+  }
+}
