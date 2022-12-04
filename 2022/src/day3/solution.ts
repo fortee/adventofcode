@@ -1,3 +1,5 @@
+import { arrayIntersect } from "../utils/tools";
+
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
@@ -28,7 +30,7 @@ async function part1(input: string[]) {
     const right = items.slice(items.length / 2, items.length);
 
     // Find the common letter between the two compartments
-    const [commonLetter] = getCommon(left.split(""), right.split(""))
+    const [commonLetter] = arrayIntersect(left.split(""), right.split(""))
 
     // Quantify the common letter
     total += getCharacterPriority(commonLetter);
@@ -47,24 +49,14 @@ async function part2(input: string[]) {
     const group = input.splice(0, 3);
 
     // Get the common letter between the first two bags
-    const firstTwoGroupCommonLetters = getCommon(group[0].split(""), group[1].split(""))
+    const firstTwoGroupCommonLetters = arrayIntersect(group[0].split(""), group[1].split(""))
     // Get the common letter with the 3rd bag
-    const [commonLetter] = getCommon(firstTwoGroupCommonLetters, group[2].split(""))
+    const [commonLetter] = arrayIntersect(firstTwoGroupCommonLetters, group[2].split(""))
 
     // Quantify the common letter
     total += getCharacterPriority(commonLetter);
   }
   console.log(`Part2: ${total}`);
-}
-
-/**
- * Get the common item between two arrays
- * @param array1 - First array
- * @param array2 - Second array
- * @returns - The common item between the two arrays
- */
-function getCommon(array1: string[], array2: string[]) {
-  return array1.filter(x => array2.includes(x));
 }
 
 /**

@@ -1,3 +1,6 @@
+import { getInput } from "./utils/tools";
+
+
 // Read in the npm attributes
 
 // Represents the number of the day we should run
@@ -7,7 +10,6 @@ if (dayNumber === undefined) {
   throw "You need to pass the day number as integer argument. ex. --day=1";
 }
 
-import { getInput } from "./utils/input";
 
 // Represents if we should use the normal or example inputs
 const exampleInput =

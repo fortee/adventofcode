@@ -23,3 +23,13 @@ export function getInput(options: getInputOptions): string {
     "utf-8"
   );
 }
+
+/**
+ * Get the common item between two arrays
+ * @param array1 - First array of strings or numbers
+ * @param array2 - Second array of strings or numbers
+ * @returns - The common items between the two arrays
+ */
+export function arrayIntersect(array1: any[], array2: any[]):any[] {
+  return array1.filter(x => array2.includes(x));
+}
