@@ -1,4 +1,4 @@
-import { arrayIntersect } from "../utils/tools";
+import { arraysIntersect, arraysEqual } from "../utils/tools";
 
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
@@ -50,12 +50,12 @@ function fullOverLap(sections: number[][]): Record<string, boolean> {
   const right = [...Array(sections[1][1] - sections[1][0] + 1).keys()].map(x => x + sections[1][0]);
 
   // Get the integers that are matching between the two arrays
-  const intersect = arrayIntersect(left, right)
+  const intersect = arraysIntersect(left, right)
 
   return {
     // If the intersect matches exactly one of the arrays it means one contains the other exactly
-    "fullOverLap": JSON.stringify(intersect) === JSON.stringify(left) || JSON.stringify(intersect) === JSON.stringify(right),
+    "fullOverLap": arraysEqual(intersect, left) || arraysEqual(intersect, right),
     // If the intersect is not null it means the two arrays have at least one matching item
-    "partialOverlap": JSON.stringify(intersect) !== JSON.stringify([])
+    "partialOverlap": !arraysEqual(intersect, [])
   }
 }

@@ -26,10 +26,20 @@ export function getInput(options: getInputOptions): string {
 
 /**
  * Get the common item between two arrays
- * @param array1 - First array of strings or numbers
- * @param array2 - Second array of strings or numbers
+ * @param array1 - First array
+ * @param array2 - Second array
  * @returns - The common items between the two arrays
  */
-export function arrayIntersect(array1: any[], array2: any[]):any[] {
+export function arraysIntersect(array1: any[], array2: any[]): any[] {
   return array1.filter(x => array2.includes(x));
 }
+
+/**
+ * Check if two arrays are the some
+ * @param array1 
+ * @param array2 
+ * @returns If the two arrays are the same. This won't catch nested arrays or if the items in the arrays are out of order
+ */
+export const arraysEqual = (array1: any[], array2: any[]): boolean =>
+  array1.length === array2.length &&
+  array1.every((v, i) => v === array2[i]);
