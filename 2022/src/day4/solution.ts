@@ -11,14 +11,14 @@ export async function solve(input: string, dayNumber: string) {
   // Use `null` on empty line (a.k.a new elf)
   const inputArray = input.split("\n");
 
-  // Solve Part 1
-  await part1(inputArray)
+  // Solve Part 1&2
+  allParts(inputArray)
 }
 
 /**
  * @param input - The Puzzle input
  */
-async function part1(input: string[]) {
+function allParts(input: string[]) {
   let part1 = 0;
   let part2 = 0;
   input.forEach(pair => {

@@ -10,14 +10,14 @@ export async function solve(input: string, dayNumber: string) {
   const inputArray = input.split("\n").map((x) => (x === "" ? null : +x));
 
   // Solve Part1&2
-  await allParts(inputArray);
+  allParts(inputArray);
 }
 
 /**
  * Elf calories
  * @param input - The Puzzle input
  */
-async function allParts(input: (number | null)[]) {
+function allParts(input: (number | null)[]) {
   const totals: number[] = [];
   let currentTotal = 0;
 

@@ -56,7 +56,7 @@ const resultToPoint: Record<string, number> = {
  * @param input - The Puzzle input
  * @param part - Which part we are solving
  */
-async function solveIt(input: string[][], part: number) {
+function solveIt(input: string[][], part: number) {
   // Keep track of the total points for the part
   let totalPoints = 0;
 
