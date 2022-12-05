@@ -14,7 +14,9 @@ export async function solve(input: string, dayNumber: string) {
   const crateMap = getCrateMap(inputArray)
 
   // Solve Part 1
-  await part1(inputArray, crateMap)
+  await doit(inputArray, crateMap, 1);
+  // Solve Part 2
+  await doit(inputArray, crateMap, 2);
 }
 
 type crateMap = Record<number, (string | null)[]>;
@@ -28,7 +30,7 @@ function getCrateMap(input: string[]): crateMap {
     // Is this the end of the crate map?
     createsProcessing = !(row === "");
 
-    if (row === " 1   2   3 " || row === "") {
+    if (arraysEqual(row.split(" ").filter(x => x !== "").slice(0, 3), ['1', '2', '3']) || row === "") {
       // Don't process the stack label row and the crate map separator row
       continue
     }
@@ -83,30 +85,30 @@ function addToMap(map: crateMap, index: number, item: string | null): void {
 /**
  * @param input - The Puzzle input
  */
-async function part1(input: string[], map: crateMap) {
-  // console.log(JSON.stringify(map, undefined, 2));
-  // console.log('---');
+async function doit(input: string[], crateMap: crateMap, part: number) {
+  // Deep copy the map as we will don't want to alter the original
+  const map: crateMap = JSON.parse(JSON.stringify(crateMap));
   for (const instructionRow of input) {
     // Process the instructions
     const instructions = instructionRow.split(" ")
     const amount = +instructions[1];
     const src = +instructions[3];
-    const dest = +instructions[5];
+    const dst = +instructions[5];
 
     // Get the crates we need to move in one go
     const sourceStack = map[src];
-    const cratesToMove = sourceStack.splice(sourceStack.length - amount, sourceStack.length).reverse()
+    const cratesToMove = sourceStack.splice(sourceStack.length - amount, sourceStack.length)
+    if (part === 1) {
+      cratesToMove.reverse()
+    }
 
     // Add the crates to the destination
-    const destinationStack = map[dest];
-    map[dest] = destinationStack.concat(cratesToMove);
-    // console.log(JSON.stringify(map, undefined, 2));
-    // console.log('---');
-
+    const destinationStack = map[dst];
+    map[dst] = destinationStack.concat(cratesToMove);
   }
   let code = '';
   for (const [i, stack] of Object.entries(map)) {
     code = `${code}${stack.slice(-1)}`
   }
-  console.log(`Part1: ${code}`);
+  console.log(`Part${part}: ${code}`);
 }
