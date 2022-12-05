@@ -29,8 +29,8 @@ function getCrateMap(input: string[]): crateMap {
 
     // Is this the end of the crate map?
     createsProcessing = !(row === "");
-
-    if (arraysEqual(row.split(" ").filter(x => x !== "").slice(0, 3), ['1', '2', '3']) || row === "") {
+    const isStackLabelRow = arraysEqual(row.split(" ").filter(x => x !== "").slice(0, 3), ['1', '2', '3'])
+    if (isStackLabelRow || row === "") {
       // Don't process the stack label row and the crate map separator row
       continue
     }
