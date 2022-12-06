@@ -7,8 +7,7 @@ import { arraysIntersect, arraysEqual } from "../utils/tools";
 export async function solve(input: string, dayNumber: string) {
   console.log(`---- Day ${dayNumber} ----`);
 
-  // Split the string to an array of integers based on new lines.
-  // Use `null` on empty line (a.k.a new elf)
+  // Split the string to an array of items
   const inputArray = input.split("\n");
 
   const crateMap = getCrateMap(inputArray)
