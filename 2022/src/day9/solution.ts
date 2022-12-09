@@ -8,7 +8,7 @@ type Position = {
 
 const positions: Record<number, Position> = {};
 
-const numberOfKnots = 10; // The first know is the Head!
+const numberOfKnots = 10; // The first knot is the Head!
 
 const visitedPositions: Record<number, Position[]> = {};
 
@@ -62,13 +62,13 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
 }
 
 /**
- * Small wrapper function to handle Know movements
+ * Small wrapper function to handle Knot movements
  * @param direction 
  */
 function moveKnots(direction: string) {
   for (const knotId in positions) {
     if (+knotId === 0) {
-      // The first know is the Head!
+      // The first knot is the Head!
       moveHead(direction, +knotId);
     } else {
       moveKnot(+knotId);
@@ -79,12 +79,12 @@ function moveKnots(direction: string) {
 
 /**
  * Move the Head in the given direction and amount
- * @param direction - The direction the head move to. U/D changes y, R/L changes x
+ * @param direction - The direction the head should moves to. U/D changes y, R/L changes x
  * @param move - The amount of the change
  */
 function moveHead(direction: string, knotId: number) {
 
-  // The first know is the Head!
+  // The first knot is the Head!
   const knot = positions[knotId];
   // Move the Head
   switch (direction) {
@@ -103,16 +103,19 @@ function moveHead(direction: string, knotId: number) {
     default:
       break;
   }
+  // Keep track of positions each know visited
+  addToVisitedPositions(knotId, knot);
 }
 
 /**
- * Move the Tail so it closed the gap to the Head
+ * Move the Knot so it follows the knot in front of it
  */
 function moveKnot(knotId: number) {
+
   // Get the knot we need to move
   const knot = positions[knotId];
 
-  // Find the reference knot our current know must follow
+  // Find the reference knot our current knot must follow
   // each knot follows the previous one
   let referenceKnot = positions[knotId - 1];
 
@@ -129,7 +132,7 @@ function moveKnot(knotId: number) {
       referenceKnot.y - knot.y > 0 ? knot.y += 1 : knot.y -= 1;
       referenceKnot.x - knot.x > 0 ? knot.x += 1 : knot.x -= 1;
     }
-    // For Part 1 we need to follow the first non Head knot = 2
+    // Keep track of positions each know visited
     addToVisitedPositions(knotId, knot);
   }
 }
@@ -160,7 +163,7 @@ function isVisitedPosition(knotId: number, position: Position): boolean {
 }
 
 /**
- * Draw out the map and where the Head and Tail are
+ * Plot the positions of the knots and visited points
  */
 function draw(visited = false): void {
 
