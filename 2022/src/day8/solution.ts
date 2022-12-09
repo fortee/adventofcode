@@ -4,7 +4,7 @@ import { performance } from 'perf_hooks';
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string) {
+export async function solve(input: string, dayNumber: string, usingExample:boolean) {
   const st = performance.now();
   console.log(`---- Day ${dayNumber} ----`);
 

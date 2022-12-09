@@ -4,7 +4,7 @@ import { arraysIntersect } from "../utils/tools";
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string) {
+export async function solve(input: string, dayNumber: string, usingExample:boolean) {
   console.log(`---- Day ${dayNumber} ----`);
 
   // Split the string to an array of items

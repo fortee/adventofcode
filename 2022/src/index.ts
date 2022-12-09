@@ -13,7 +13,7 @@ if (dayNumber === undefined) {
 
 // Represents if we should use the normal or example inputs
 const exampleInput =
-  process.env.npm_config_example_input === undefined ? false : true;
+  process.env.npm_config_ex === undefined ? false : true;
 
 // Import the given day's solution file and run the `solve` function on it
 import(`./day${dayNumber}/solution.js`)
@@ -23,7 +23,7 @@ import(`./day${dayNumber}/solution.js`)
       example: exampleInput,
     });
     // Run the solve() function to get the given day's solution
-    object.solve(input, dayNumber);
+    object.solve(input, dayNumber, exampleInput);
   })
   .catch((error) =>
     // Something is wrong
