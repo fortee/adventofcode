@@ -38,6 +38,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
   // Part 1
   console.log(`Part1: ${signalStrengths.reduce(function (product, value) { return product + value; })}`);
   // Part 2
+  console.log(`Part2: `);
   display();
   console.log(`Done in ${((performance.now() - st) / 1000).toFixed(4)}s`);
 }
@@ -79,7 +80,6 @@ function addPixelToScreen(): void {
  * Draw the screen
  */
 function display(): void {
-  console.log(`Part2: `);
   console.log("");
   screen.map(row => console.log(row));
   console.log("");
