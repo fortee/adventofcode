@@ -4,26 +4,26 @@ import { arraysIntersect, arraysEqual } from "../utils/tools";
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string, usingExample:boolean) {
+export async function solve(input: string, dayNumber: string, usingExample: boolean): Promise<void> {
   console.log(`---- Day ${dayNumber} ----`);
 
   // Split the string to an array of items
   const inputArray = input.split("\n");
 
   // Solve Part 1&2
-  allParts(inputArray)
+  allParts(inputArray);
 }
 
 /**
  * @param input - The Puzzle input
  */
-function allParts(input: string[]) {
+function allParts(input: string[]): void {
   let part1 = 0;
   let part2 = 0;
   input.forEach(pair => {
-    const sections = pair.split(",").map(x => x.split("-").map(i => +i))
+    const sections = pair.split(",").map(x => x.split("-").map(i => +i));
 
-    const result = fullOverLap(sections)
+    const result = fullOverLap(sections);
 
     if (result["fullOverLap"]) {
       part1++;
@@ -49,12 +49,12 @@ function fullOverLap(sections: number[][]): Record<string, boolean> {
   const right = [...Array(sections[1][1] - sections[1][0] + 1).keys()].map(x => x + sections[1][0]);
 
   // Get the integers that are matching between the two arrays
-  const intersect = arraysIntersect(left, right)
+  const intersect = arraysIntersect(left, right);
 
   return {
     // If the intersect matches exactly one of the arrays it means one contains the other exactly
     "fullOverLap": arraysEqual(intersect, left) || arraysEqual(intersect, right),
     // If the intersect is not null it means the two arrays have at least one matching item
     "partialOverlap": !arraysEqual(intersect, [])
-  }
+  };
 }

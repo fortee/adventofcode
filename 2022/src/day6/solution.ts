@@ -4,7 +4,7 @@ import { arraysIntersect, arraysEqual } from "../utils/tools";
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string, usingExample:boolean) {
+export async function solve(input: string, dayNumber: string, usingExample:boolean): Promise<void>  {
   console.log(`---- Day ${dayNumber} ----`);
 
   // Split the string to an array of items
@@ -19,7 +19,7 @@ export async function solve(input: string, dayNumber: string, usingExample:boole
 /**
  * @param input - The Puzzle input
  */
-async function doit(input: string[], part: number, makerLength: number) {
+async function doit(input: string[], part: number, makerLength: number): Promise<number|void> {
 
   let index = makerLength;
   const signalLength = input.length;

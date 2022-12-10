@@ -2,7 +2,7 @@
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string, usingExample:boolean) {
+export async function solve(input: string, dayNumber: string, usingExample:boolean): Promise<void>  {
   console.log(`---- Day ${dayNumber} ----`);
 
   // Split the string to an array of integers based on new lines.
@@ -17,7 +17,7 @@ export async function solve(input: string, dayNumber: string, usingExample:boole
  * Elf calories
  * @param input - The Puzzle input
  */
-function allParts(input: (number | null)[]) {
+function allParts(input: (number | null)[]):void {
   const totals: number[] = [];
   let currentTotal = 0;
 

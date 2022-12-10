@@ -22,7 +22,7 @@ for (let i = 0; i < numberOfKnots; i++) {
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
  */
-export async function solve(input: string, dayNumber: string, usingExample: boolean) {
+export async function solve(input: string, dayNumber: string, usingExample: boolean): Promise<void> {
   const st = performance.now();
   console.log(`---- Day ${dayNumber} ----`);
 
@@ -65,7 +65,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
  * Small wrapper function to handle Knot movements
  * @param direction 
  */
-function moveKnots(direction: string) {
+function moveKnots(direction: string): void {
   for (const knotId in positions) {
     if (+knotId === 0) {
       // The first knot is the Head!
@@ -82,7 +82,7 @@ function moveKnots(direction: string) {
  * @param direction - The direction the head should moves to. U/D changes y, R/L changes x
  * @param move - The amount of the change
  */
-function moveHead(direction: string, knotId: number) {
+function moveHead(direction: string, knotId: number): void {
 
   // The first knot is the Head!
   const knot = positions[knotId];
@@ -110,7 +110,7 @@ function moveHead(direction: string, knotId: number) {
 /**
  * Move the Knot so it follows the knot in front of it
  */
-function moveKnot(knotId: number) {
+function moveKnot(knotId: number): void {
 
   // Get the knot we need to move
   const knot = positions[knotId];
