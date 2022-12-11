@@ -15,6 +15,9 @@ type Monkey = {
 // Main array we use to keep track of the Monkeys
 const monkeys: Monkey[] = [];
 
+// Amount we reduce the values by
+const reduce = 1;
+
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
@@ -30,7 +33,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     monkeys.push({
       idx: +data[0].replace(":", ""),
       activity: 0,
-      items: data[1].replace("Starting items: ", "").split(",").map(x => +x.trim()),
+      items: data[1].replace("Starting items: ", "").split(",").map(x => (+x.trim()) / reduce),
       operation: data[2].split("new = ")[1].split(" ")[1],
       operationOn: data[2].split("new = ")[1].split(" ")[2],
       divisibleBy: +data[3].replace("Test: divisible by ", ""),
@@ -39,19 +42,20 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     });
   }
 
-  [1].forEach(part => doIt(part));
+  [2].forEach(part => doIt(part));
   console.log(`Done in ${((performance.now() - st) / 1000).toFixed(4)}s`);
 }
 
 function doIt(part: number): void {
-  const relief = part === 1 ? 3 : 1;
   const rounds = part === 1 ? 20 : 10000;
   // Play the 20 rounds
   for (let i = 0; i < rounds; i++) {
-    playRound(relief);
-    console.log(`Round ${i}`);
-    monkeys.forEach(monkey => console.log(`Monkey ${monkey.idx}: ${monkey.items}`));
-    console.log('');
+    playRound(part);
+    if ([1, 20, 1000].includes(i)) {
+      console.log(`Round ${i}`);
+      monkeys.forEach(monkey => console.log(`Monkey ${monkey.idx}: ${monkey.activity}`));
+      console.log('');
+    }
   }
   const result = monkeys.map(x => x.activity).sort((a, b) => b - a).slice(0, 2).reduce(function (product, value) { return product * value; });
   console.log(`Part${1}: ${result}`);
@@ -60,7 +64,7 @@ function doIt(part: number): void {
 /**
  * Play the round where Monkeys swap items between each other
  */
-function playRound(relief: number): void {
+function playRound(part: number): void {
   // Loop through each monkey
   monkeys.forEach(monkey => {
     const monkeyItems = [...monkey.items];
@@ -75,20 +79,26 @@ function playRound(relief: number): void {
       const [item] = monkeyItems.splice(0, 1);
       monkey.activity++;
       // Calculate the Worry Level
+      const calcItem = item * reduce;
       let baseWorryLevel: number;
       if (monkey.operation === "*") {
-        baseWorryLevel = item * (monkey.operationOn === "old" ? item : +monkey.operationOn);
+        baseWorryLevel = calcItem * (monkey.operationOn === "old" ? calcItem : +monkey.operationOn);
       } else {
-        baseWorryLevel = item + (monkey.operationOn === "old" ? item : +monkey.operationOn);
+        baseWorryLevel = calcItem + (monkey.operationOn === "old" ? calcItem : +monkey.operationOn);
       }
 
-      const worryLevel = Math.floor(baseWorryLevel / relief);
+      let worryLevel: number;
+      if (part === 1) {
+        worryLevel = Math.floor(baseWorryLevel / 3);
+      } else {
+        worryLevel = baseWorryLevel;
+      }
 
       // Check the rule and pass to the correct other monkey
-      if (worryLevel % (monkey.divisibleBy) === 0) {
-        monkeys[monkey.trueMonkeyIdx].items.push(worryLevel);
+      if (worryLevel % monkey.divisibleBy === 0) {
+        monkeys[monkey.trueMonkeyIdx].items.push(worryLevel / reduce);
       } else {
-        monkeys[monkey.falseMonkeyIdx].items.push(worryLevel);
+        monkeys[monkey.falseMonkeyIdx].items.push(worryLevel / reduce);
       }
     };
   });
