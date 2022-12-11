@@ -15,9 +15,6 @@ type Monkey = {
 // Main array we use to keep track of the Monkeys
 const monkeys: Monkey[] = [];
 
-// Amount we reduce the values by
-const reduce = 1;
-
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
@@ -33,7 +30,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     monkeys.push({
       idx: +data[0].replace(":", ""),
       activity: 0,
-      items: data[1].replace("Starting items: ", "").split(",").map(x => (+x.trim()) / reduce),
+      items: data[1].replace("Starting items: ", "").split(",").map(x => +x.trim()),
       operation: data[2].split("new = ")[1].split(" ")[1],
       operationOn: data[2].split("new = ")[1].split(" ")[2],
       divisibleBy: +data[3].replace("Test: divisible by ", ""),
@@ -49,7 +46,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
 function doIt(part: number): void {
   const rounds = part === 1 ? 20 : 10000;
   // Play the 20 rounds
-  for (let i = 0; i < rounds; i++) {
+  for (let i = 1; i < rounds+1; i++) {
     playRound(part);
     if ([1, 20, 1000].includes(i)) {
       console.log(`Round ${i}`);
@@ -79,12 +76,11 @@ function playRound(part: number): void {
       const [item] = monkeyItems.splice(0, 1);
       monkey.activity++;
       // Calculate the Worry Level
-      const calcItem = item * reduce;
       let baseWorryLevel: number;
       if (monkey.operation === "*") {
-        baseWorryLevel = calcItem * (monkey.operationOn === "old" ? calcItem : +monkey.operationOn);
+        baseWorryLevel = item * (monkey.operationOn === "old" ? item : +monkey.operationOn);
       } else {
-        baseWorryLevel = calcItem + (monkey.operationOn === "old" ? calcItem : +monkey.operationOn);
+        baseWorryLevel = item + (monkey.operationOn === "old" ? item : +monkey.operationOn);
       }
 
       let worryLevel: number;
@@ -96,9 +92,9 @@ function playRound(part: number): void {
 
       // Check the rule and pass to the correct other monkey
       if (worryLevel % monkey.divisibleBy === 0) {
-        monkeys[monkey.trueMonkeyIdx].items.push(worryLevel / reduce);
+        monkeys[monkey.trueMonkeyIdx].items.push(worryLevel);
       } else {
-        monkeys[monkey.falseMonkeyIdx].items.push(worryLevel / reduce);
+        monkeys[monkey.falseMonkeyIdx].items.push(worryLevel);
       }
     };
   });
