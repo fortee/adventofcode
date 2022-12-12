@@ -12,6 +12,7 @@ type Points = {
 };
 
 type HeightMap = {
+  map: Point[][];
   points: Points;
   start?: Point,
   end?: Point,
@@ -19,7 +20,7 @@ type HeightMap = {
 
 let map: HeightMap;
 
-let visitedPoints:string[] = [] 
+let visitedPoints: Point[] = [];
 
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
@@ -48,24 +49,39 @@ function part1() {
     return;
   }
   // Start to move towards the `end` from the `start`
-  return moveToEnd(map.start);
+  const end = moveToEnd(map.start);
+  end === map.end ? console.log(`End found: ${end.coordinates}`) : console.log(`End was not found`);
+
+  console.log(" ");
+  console.log("=== PATH ===");
+  for (const pointsRow of map.map) {
+    let row = "";
+    for (const point of pointsRow) {
+      if (visitedPoints.includes(point)) {
+        row += "  _";
+      } else {
+        row += point.height.toString().split("").length === 2 ? ` ${point.height}` : `  ${point.height}`;
+      }
+    }
+    console.log(row);
+  }
 }
 
 /**
  * Move from this point towards the `end`
  * @param point 
  */
-function moveToEnd(point: Point) {
-  visitedPoints.push(point.coordinates)
+function moveToEnd(point: Point): Point | void {
+  visitedPoints.push(point);
   const neighbors = getPossibleMoves(point);
-  console.log(`${point.coordinates} -> ${neighbors.map(n => n.coordinates)}`);
-  neighbors.forEach(neighbor => {
+  // console.log(`${point.coordinates} -> ${neighbors.map(n => n.coordinates)}`);
+  for (const neighbor of neighbors) {
     if (neighbor === map.end) {
-      console.log(`Found end!`);
       return neighbor;
     }
-    moveToEnd(neighbor);
-  });
+    if (visitedPoints.includes(neighbor)) continue;
+    return moveToEnd(neighbor);
+  };
 }
 
 /**
@@ -75,9 +91,7 @@ function moveToEnd(point: Point) {
  * @returns - List of valid point we can move to
  */
 function getPossibleMoves(point: Point) {
-  const nei = getNeighbors(point)
-  const res=  nei.filter(p => (p.height - point.height <= 1) && !visitedPoints.includes(p.coordinates));
-  return res;
+  return getNeighbors(point).filter(p => (p.height - point.height <= 1) && !visitedPoints.includes(p));
 }
 
 /**
@@ -106,7 +120,8 @@ function getNeighbors(point: Point) {
  */
 function getMap(input: string[]): HeightMap {
   const map: HeightMap = {
-    points: {}
+    points: {},
+    map: []
   };
   const totalRows = input.length;
   console.log(" ");
@@ -114,6 +129,7 @@ function getMap(input: string[]): HeightMap {
   console.log(" ");
   input.forEach((row, y) => {
     let numRow = "";
+    const pointsRow: Point[] = [];
     row.split("").forEach((letter, x) => {
       const coordinates = `${x + 1}-${totalRows - y}`;
       const point: Point = { x: x + 1, y: totalRows - y, coordinates: coordinates, height: 0 };
@@ -121,18 +137,22 @@ function getMap(input: string[]): HeightMap {
         case "S":
           point.height = getHeight("a");
           map.start = point;
+          numRow += "  S";
           break;
         case "E":
-          point.height = getHeight("z");
+          point.height = getHeight("E");
           map.end = point;
+          numRow += "  E";
           break;
         default:
           point.height = getHeight(letter);
+          numRow += point.height.toString().split("").length === 2 ? ` ${point.height}` : `  ${point.height}`;
           break;
       }
       map.points[coordinates] = point;
-      numRow += `[${coordinates} (${point.height} )]`;
+      pointsRow.push(point);
     });
+    map.map.push(pointsRow);
     console.log(numRow);
   });
   console.log(" ");
