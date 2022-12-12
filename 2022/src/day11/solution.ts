@@ -74,6 +74,7 @@ function playRound(part: number): void {
     while (monkeyItems.length) {
       // Remove the element from the monkey
       const [item] = monkeyItems.splice(0, 1);
+      const originalValue = item
       monkey.activity++;
       // Calculate the Worry Level
       let baseWorryLevel: number;
@@ -92,8 +93,10 @@ function playRound(part: number): void {
 
       // Check the rule and pass to the correct other monkey
       if (worryLevel % monkey.divisibleBy === 0) {
+        console.log(`Monkey ${monkey.idx} | ${originalValue} -> ${worryLevel} => Monkey ${monkey.trueMonkeyIdx}`);
         monkeys[monkey.trueMonkeyIdx].items.push(worryLevel);
       } else {
+        console.log(`Monkey ${monkey.idx} | ${originalValue} -> ${worryLevel} => Monkey ${monkey.falseMonkeyIdx}`);
         monkeys[monkey.falseMonkeyIdx].items.push(worryLevel);
       }
     };
