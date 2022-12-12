@@ -19,6 +19,8 @@ type HeightMap = {
 
 let map: HeightMap;
 
+let visitedPoints:string[] = [] 
+
 /**
  * Main function to trigger all functionality needed to solve the daily challenge
  * @param input - `raw` string content of the input file
@@ -46,7 +48,7 @@ function part1() {
     return;
   }
   // Start to move towards the `end` from the `start`
-  moveToEnd(map.start);
+  return moveToEnd(map.start);
 }
 
 /**
@@ -54,15 +56,15 @@ function part1() {
  * @param point 
  */
 function moveToEnd(point: Point) {
+  visitedPoints.push(point.coordinates)
   const neighbors = getPossibleMoves(point);
+  console.log(`${point.coordinates} -> ${neighbors.map(n => n.coordinates)}`);
   neighbors.forEach(neighbor => {
     if (neighbor === map.end) {
       console.log(`Found end!`);
-      return;
+      return neighbor;
     }
-    console.log(`${point.coordinates} -> ${neighbor.coordinates}`);
-    
-    return moveToEnd(neighbor);
+    moveToEnd(neighbor);
   });
 }
 
@@ -73,7 +75,9 @@ function moveToEnd(point: Point) {
  * @returns - List of valid point we can move to
  */
 function getPossibleMoves(point: Point) {
-  return getNeighbors(point).filter(p => p.height - point.height <= 1);
+  const nei = getNeighbors(point)
+  const res=  nei.filter(p => (p.height - point.height <= 1) && !visitedPoints.includes(p.coordinates));
+  return res;
 }
 
 /**
@@ -87,7 +91,7 @@ function getNeighbors(point: Point) {
   [-1, 0, 1].forEach(x => {
     [-1, 0, 1].forEach(y => {
       const coordinates = `${point.x + x}-${point.y + y}`;
-      if (!(x === 0 && y === 0) && coordinates in map) {
+      if (!(x === 0 && y === 0) && coordinates in map.points) {
         neighbors.push(map.points[coordinates]);
       }
     });
