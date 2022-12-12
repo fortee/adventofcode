@@ -48,23 +48,12 @@ function part1() {
     console.log(`Start or End point found for map!`);
     return;
   }
+  draw();
   // Start to move towards the `end` from the `start`
   const end = moveToEnd(map.start);
   end === map.end ? console.log(`End found: ${end.coordinates}`) : console.log(`End was not found`);
 
-  console.log(" ");
-  console.log("=== PATH ===");
-  for (const pointsRow of map.map) {
-    let row = "";
-    for (const point of pointsRow) {
-      if (visitedPoints.includes(point)) {
-        row += "  _";
-      } else {
-        row += point.height.toString().split("").length === 2 ? ` ${point.height}` : `  ${point.height}`;
-      }
-    }
-    console.log(row);
-  }
+  draw(true);
 }
 
 /**
@@ -74,6 +63,10 @@ function part1() {
 function moveToEnd(point: Point): Point | void {
   visitedPoints.push(point);
   const neighbors = getPossibleMoves(point);
+  if (point.x === 5 && point.y === 11) {
+    console.log(4);
+
+  }
   // console.log(`${point.coordinates} -> ${neighbors.map(n => n.coordinates)}`);
   for (const neighbor of neighbors) {
     if (neighbor === map.end) {
@@ -128,7 +121,6 @@ function getMap(input: string[]): HeightMap {
   console.log("=== MAP ===");
   console.log(" ");
   input.forEach((row, y) => {
-    let numRow = "";
     const pointsRow: Point[] = [];
     row.split("").forEach((letter, x) => {
       const coordinates = `${x + 1}-${totalRows - y}`;
@@ -137,23 +129,19 @@ function getMap(input: string[]): HeightMap {
         case "S":
           point.height = getHeight("a");
           map.start = point;
-          numRow += "  S";
           break;
         case "E":
-          point.height = getHeight("E");
+          point.height = getHeight("z");
           map.end = point;
-          numRow += "  E";
           break;
         default:
           point.height = getHeight(letter);
-          numRow += point.height.toString().split("").length === 2 ? ` ${point.height}` : `  ${point.height}`;
           break;
       }
       map.points[coordinates] = point;
       pointsRow.push(point);
     });
     map.map.push(pointsRow);
-    console.log(numRow);
   });
   console.log(" ");
   return map;
@@ -166,4 +154,21 @@ function getMap(input: string[]): HeightMap {
  */
 function getHeight(letter: string): number {
   return letter.charCodeAt(0) - 96;
+}
+
+function draw(showVisited= false) {
+
+  console.log(" ");
+  console.log("=== PATH ===");
+  for (const pointsRow of map.map) {
+    let row = "";
+    for (const point of pointsRow) {
+      if (showVisited && visitedPoints.includes(point)) {
+        row += `  -`;
+      } else {
+        row += point.height.toString().split("").length === 2 ? ` ${point.height}` : `  ${point.height}`;
+      }
+    }
+    console.log(row);
+  }
 }
