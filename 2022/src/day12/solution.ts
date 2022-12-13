@@ -37,41 +37,63 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
   // Split the string to an array of items
   const inputArray = input.split("\n");
 
-  map = generateMap(inputArray);
-  part1();
+  part1(inputArray);
+  part2(inputArray);
   console.log(`Done in ${((performance.now() - st) / 1000).toFixed(4)}s`);
 }
 
-/**
- * Solve Part 1 of the puzzle
- * @param input - The input as an array of strings
- */
-function part1() {
-  if (map.start === undefined || map.end === undefined) {
-    console.log(`Start or End point not found for map!`);
-    return;
-  }
-  // draw(true);
+function part1(input: string[]): void {
+  // Generate the map
+  map = generateMap(input);
 
-  // Start to move towards the `end` from the `start`
-  const end = move(map.start);
-  end === map.end ? console.log(`End found: ${end.coordinates}`) : console.log(`End was not found`);
-  console.log("=== PART 1 DONE ===");
+  // Draw the height map
+  // draw();
 
+  // Define the starting point
+  const startingPoint = map.start!;
+
+  // Set the starting distance to 0
+  startingPoint.distance = 0;
+
+  // Traverse the map from this starting point
+  const end = traverseMap(startingPoint, 1);
+
+  console.log(`Part1: ${end?.coordinates}: ${end?.distance}`);
+  // Print the path we took
+  // printPath(startingPoint, end!);
 }
 
+
+function part2(input: string[]): void {
+  // Generate the map
+  map = generateMap(input);
+
+  // Draw the height map
+  // draw();
+
+  // Define the starting point
+  const startingPoint = map.end!;
+
+  // Set the starting distance to 0
+  startingPoint.distance = 0;
+
+  // Traverse the map from this starting point
+  const end = traverseMap(startingPoint, 2);
+
+  console.log(`Part2: ${end?.coordinates}: ${end?.distance}`);
+  // Print the path we took
+  // printPath(startingPoint, end!);
+}
 /**
  * Move from this point towards the `end`
  * @param point 
  */
-function move(point: Point): Point | undefined {
+function traverseMap(point: Point, part: number): Point | undefined {
 
   // Get the neighbors for the given point
-  const neighbors = getNeighbors(point);
+  const neighbors = getNeighbors(point, part);
 
   // Loop through each neighbor
-  // console.log(` `);
-  // console.log(`${point.coordinates}`);
   for (const neighbor of neighbors) {
 
     if (neighbor.pathVia === undefined || neighbor.distance > point.distance + 1) {
@@ -79,14 +101,12 @@ function move(point: Point): Point | undefined {
       // our current path would be faster
       neighbor.pathVia = point;
       neighbor.distance = point.distance + 1;
-      // console.log(`    ${neighbor.coordinates} | ${neighbor.distance} (${neighbor.pathVia.coordinates})`);
-    } else {
-      // console.log(`    ${neighbor.coordinates} | stays`);
     }
 
-    if (neighbor === map.end) {
+    if ((part == 1 && neighbor === map.end) || (part == 2 && neighbor.height === 1)) {
       return neighbor;
     }
+
   };
 
   // As we already explored all of the neighbors if this point
@@ -97,9 +117,13 @@ function move(point: Point): Point | undefined {
   sortPoints();
 
   // Run move recursively from the closest point 
-  const result = move(getNextPoint());
+  const nextPoint = getNextPoint();
+  const result = traverseMap(nextPoint, part);
   // If we found the end return it, or return undefined
-  return result !== undefined ? result : undefined;
+  if (result !== undefined) {
+    return result;
+  }
+  return undefined;
 }
 
 /**
@@ -108,7 +132,7 @@ function move(point: Point): Point | undefined {
  * @param map - The height map
  * @returns - The neighboring points, at a maximum one distance 
  */
-function getNeighbors(point: Point) {
+function getNeighbors(point: Point, part: number): Point[] {
   const neighbors: Point[] = [];
   [-1, 0, 1].forEach(x => {
     [-1, 0, 1].forEach(y => {
@@ -116,13 +140,16 @@ function getNeighbors(point: Point) {
       if (!(x === 0 && y === 0) && (x === 0 || y === 0) && coordinates in map.points) {
         // You can move exactly one square up, down, left, or right.
         const neighbor = map.points[coordinates];
-        if (neighbor.height - point.height <= 1 && !visitedPoints.includes(neighbor)) {
-          // To avoid needing to get out your climbing gear, the elevation of the destination square can be at most one higher
-          // than the elevation of your current square; that is, if your current elevation is m, you could step to elevation n,
-          // but not to elevation o.
-          // (This also means that the elevation of the destination square can be much lower than the elevation of your current square.)
+        
+        // We should not re-visit points
+        if (visitedPoints.includes(neighbor)) return;
+
+        if ((part === 1 && neighbor.height - point.height <= 1) || (part === 2 && point.height - neighbor.height <= 1)) {
+          // For part1 we want to move to places that are lower or maximum one higher 
+          // For part 2 we want move to places that are not lower than one
           neighbors.push(neighbor);
         }
+
       }
     });
   });
@@ -142,18 +169,23 @@ function generateMap(input: string[]): HeightMap {
     height: input.length,
   };
   const totalRows = input.length;
-  console.log(" ");
-  console.log("=== MAP ===");
-  console.log(" ");
+
   input.forEach((row, y) => {
     const pointsRow: Point[] = [];
     row.split("").forEach((letter, x) => {
       const coordinates = `${x + 1}-${totalRows - y}`;
-      const point: Point = { x: x + 1, y: totalRows - y, coordinates: coordinates, height: 0, distance: Number.MAX_SAFE_INTEGER, pathVia: undefined };
+      const point: Point = {
+        x: x + 1,
+        y: totalRows - y,
+        coordinates: coordinates,
+        height: 0,
+        distance: Number.MAX_SAFE_INTEGER,
+        pathVia: undefined
+      };
+
       switch (letter) {
         case "S":
           point.height = getHeight("a");
-          point.distance = 0;
           map.start = point;
           break;
         case "E":
@@ -164,12 +196,12 @@ function generateMap(input: string[]): HeightMap {
           point.height = getHeight(letter);
           break;
       }
+
       map.points[coordinates] = point;
       map.orderedPoints.push(point);
       pointsRow.push(point);
     });
   });
-  console.log(" ");
   return map;
 }
 
@@ -182,7 +214,7 @@ function getHeight(letter: string): number {
   return letter.charCodeAt(0) - 96;
 }
 
-function draw(showVisited = false, startX = 1000, startY = 1000, size = 5000) {
+function draw(showVisited = false, startX = 1000, startY = 1000, size = 5000): void {
 
   console.log(" ");
   console.log("=== PATH ===");
@@ -205,11 +237,6 @@ function draw(showVisited = false, startX = 1000, startY = 1000, size = 5000) {
         continue;
       }
 
-      // if (showVisited && visitedPoints.includes(point)) {
-      //   row += pad(`-`);
-      // } else {
-      //   row += pad(`${point.height}`);
-      // }
       row += pad(`${point.coordinates}[${point.height}]`);
     }
     // Only print if not empty
@@ -237,4 +264,20 @@ function getNextPoint(): Point {
 function sortPoints(): void {
   const sorted = map.orderedPoints.sort((a, b) => a.distance - b.distance);
   map.orderedPoints = sorted;
+}
+
+/**
+ * Print the path that was found between the start and end point
+ * @param start - Point where we started
+ * @param end - Point where we ended
+ */
+function printPath(start: Point, end: Point): void {
+  console.log(" ");
+  const path: string[] = [];
+  let point = end;
+  while (point !== start) {
+    path.unshift(`${point?.coordinates}`);
+    point = point.pathVia!;
+  }
+  console.log(path.join(", "));
 }
