@@ -4,7 +4,7 @@ import { performance } from 'perf_hooks';
 type Monkey = {
   idx: number,
   activity: number,
-  items: number[],
+  items: number[][],
   operation: string,
   operationOn: string,
   divisibleBy: number,
@@ -30,7 +30,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     monkeys.push({
       idx: +data[0].replace(":", ""),
       activity: 0,
-      items: data[1].replace("Starting items: ", "").split(",").map(x => +x.trim()),
+      items: data[1].replace("Starting items: ", "").split(",").map(x => getPrimeFactors(+x.trim())),
       operation: data[2].split("new = ")[1].split(" ")[1],
       operationOn: data[2].split("new = ")[1].split(" ")[2],
       divisibleBy: +data[3].replace("Test: divisible by ", ""),
@@ -39,16 +39,16 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     });
   }
 
-  [2].forEach(part => doIt(part));
+  [1].forEach(part => doIt(part));
   console.log(`Done in ${((performance.now() - st) / 1000).toFixed(4)}s`);
 }
 
 function doIt(part: number): void {
   const rounds = part === 1 ? 20 : 10000;
   // Play the 20 rounds
-  for (let i = 1; i < rounds+1; i++) {
+  for (let i = 1; i < rounds + 1; i++) {
     playRound(part);
-    if ([1, 20, 1000].includes(i)) {
+    if ([20, 1000].includes(i)) {
       console.log(`Round ${i}`);
       monkeys.forEach(monkey => console.log(`Monkey ${monkey.idx}: ${monkey.activity}`));
       console.log('');
@@ -74,31 +74,58 @@ function playRound(part: number): void {
     while (monkeyItems.length) {
       // Remove the element from the monkey
       const [item] = monkeyItems.splice(0, 1);
-      const originalValue = item
+      const originalValue = item;
       monkey.activity++;
       // Calculate the Worry Level
-      let baseWorryLevel: number;
+      let newItem: number[];
       if (monkey.operation === "*") {
-        baseWorryLevel = item * (monkey.operationOn === "old" ? item : +monkey.operationOn);
+        if (monkey.operationOn === "old") {
+          newItem = item.concat(item);
+
+        } else {
+          newItem = [...item];
+          newItem.push(+monkey.operationOn);
+        }
       } else {
-        baseWorryLevel = item + (monkey.operationOn === "old" ? item : +monkey.operationOn);
+        const itemValue = getItemValue(item);
+        const newValue = itemValue + (monkey.operationOn === "old" ? itemValue : +monkey.operationOn);
+        newItem = getPrimeFactors(newValue);
       }
 
-      let worryLevel: number;
+      let newItemValue = getItemValue(newItem);
       if (part === 1) {
-        worryLevel = Math.floor(baseWorryLevel / 3);
+        newItemValue = Math.floor(newItemValue / 3);
       } else {
-        worryLevel = baseWorryLevel;
+        newItemValue = newItemValue;
       }
+
+      const finalItem = getPrimeFactors(newItemValue);
 
       // Check the rule and pass to the correct other monkey
-      if (worryLevel % monkey.divisibleBy === 0) {
-        console.log(`Monkey ${monkey.idx} | ${originalValue} -> ${worryLevel} => Monkey ${monkey.trueMonkeyIdx}`);
-        monkeys[monkey.trueMonkeyIdx].items.push(worryLevel);
+      if (finalItem.includes(monkey.divisibleBy)) {
+        monkeys[monkey.trueMonkeyIdx].items.push(finalItem);
       } else {
-        console.log(`Monkey ${monkey.idx} | ${originalValue} -> ${worryLevel} => Monkey ${monkey.falseMonkeyIdx}`);
-        monkeys[monkey.falseMonkeyIdx].items.push(worryLevel);
+        monkeys[monkey.falseMonkeyIdx].items.push(finalItem);
       }
     };
   });
+}
+
+function getPrimeFactors(number: number) {
+  const factors = [];
+  let divisor = 2;
+
+  while (number >= 2) {
+    if (number % divisor == 0) {
+      factors.push(divisor);
+      number = number / divisor;
+    } else {
+      divisor++;
+    }
+  }
+  return factors;
+}
+
+function getItemValue(item: number[]): number {
+  return item.reduce(function (product, value) { return product * value; });
 }
