@@ -62,16 +62,18 @@ function playRound(monkeys: Monkey[], lcd: number, part: number): void {
          * Ex. Check division for 3, 7 for number 2187:
          *      lcd = 21 (3*7)
          *      baseWorryLevel = 27
-         *      2187 / 21 = 104,142857143 => Math.floor(2187 / 21) = 104
-         *      104 * lcd = 2184
-         *      2187 - 2184 = 3
+         *      2187 / 21  => 104,142857143... Math.floor(2187 / 21) = 104
+         *      104 * lcd  => 2184
+         *      2187 - 2184  => 3
          *      At this point we have "split" the original number (the number we want to "reduce") to 2184 and 3
          *      We know that `2184` is divisible with both 7 and 3, which means we only need to investigate the divisibility of the remainder
          *      3 % 3 === 0 will be the same as 2187 % 3 === 0
          *      3 % 7 === 0 will be the same as 2187 % 7 === 0
-         *      This means we can pass the remainder along as a new item for the next Monkey, instead of the ever growing number
+         *      This means we can pass the remainder along as a new item for the next Monkey, instead of the ever growing number.
+         *      We can express this simply by using `remainder` operator.
+         *      2187 % 21 => 3
          */
-        worryLevel = baseWorryLevel > lcd ? baseWorryLevel - (Math.floor(baseWorryLevel / lcd) * lcd) : baseWorryLevel;
+        worryLevel = baseWorryLevel > lcd ? baseWorryLevel % lcd : baseWorryLevel;
       }
 
       // Check the rule and pass to the correct other monkey
