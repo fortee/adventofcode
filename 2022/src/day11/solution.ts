@@ -1,10 +1,12 @@
 import { performance } from 'perf_hooks';
 
+type Primes = { [key: number]: number; };
+
 // Set up Monkey type
 type Monkey = {
   idx: number,
   activity: number,
-  items: number[][],
+  items: Primes[],
   operation: string,
   operationOn: string,
   divisibleBy: number,
@@ -39,7 +41,7 @@ export async function solve(input: string, dayNumber: string, usingExample: bool
     });
   }
 
-  [1].forEach(part => doIt(part));
+  [2].forEach(part => doIt(part));
   console.log(`Done in ${((performance.now() - st) / 1000).toFixed(4)}s`);
 }
 
@@ -48,8 +50,9 @@ function doIt(part: number): void {
   // Play the 20 rounds
   for (let i = 1; i < rounds + 1; i++) {
     playRound(part);
-    if ([20, 1000].includes(i)) {
+    if ([1, 20, 1000].includes(i)) {
       console.log(`Round ${i}`);
+      // monkeys.forEach(monkey => { console.log(`Monkey ${monkey.idx}: ${monkey.items.map(i => i.value)}`); });
       monkeys.forEach(monkey => console.log(`Monkey ${monkey.idx}: ${monkey.activity}`));
       console.log('');
     }
@@ -64,54 +67,69 @@ function doIt(part: number): void {
 function playRound(part: number): void {
   // Loop through each monkey
   monkeys.forEach(monkey => {
-    const monkeyItems = [...monkey.items];
-    monkey.items = [];
     // Empty out the list of items for the Monkey
     // we do this as we don't want to alter the list while we iterate over it
     // TODO: I bet there is a better way to do this in JS... find it...
 
     // Loop through each item at the monkey
-    while (monkeyItems.length) {
+    while (monkey.items.length) {
       // Remove the element from the monkey
-      const [item] = monkeyItems.splice(0, 1);
-      const originalValue = item;
+      const [item] = monkey.items.splice(0, 1);
+      // console.log(`Original: ` + JSON.stringify(item, undefined, 2));
+      // console.log(`Original: ` + getPrimesValue(item));
       monkey.activity++;
       // Calculate the Worry Level
-      let newItem: number[];
+      let newItem: Primes;
+      /**
+       * Make the `Primes` type work
+       * Add to the `powers`
+       * Add function that get's the values based on powers
+       */
       if (monkey.operation === "*") {
+        const existingPrimes = Object.keys(item).map(p => +p);
         if (monkey.operationOn === "old") {
-          newItem = item.concat(item);
-
+          Object.keys(item).forEach(prime => {
+            item[+prime] += item[+prime];
+          });
         } else {
-          newItem = [...item];
-          newItem.push(+monkey.operationOn);
+          if (existingPrimes.includes(+monkey.operationOn)) {
+            item[+monkey.operationOn] += 1;
+          } else {
+            item[+monkey.operationOn] = 1;
+          }
         }
+        newItem = item;
       } else {
-        const itemValue = getItemValue(item);
-        const newValue = itemValue + (monkey.operationOn === "old" ? itemValue : +monkey.operationOn);
+        // Addition
+        let value = getPrimesValue(item);
+        if (monkey.operationOn === "old") {
+          value += value;
+        } else {
+          value += +monkey.operationOn;
+        }
+        newItem = getPrimeFactors(value);
+      }
+
+      if (part === 1) {
+        const newValue = Math.floor(getPrimesValue(newItem) / 3);
         newItem = getPrimeFactors(newValue);
       }
 
-      let newItemValue = getItemValue(newItem);
-      if (part === 1) {
-        newItemValue = Math.floor(newItemValue / 3);
-      } else {
-        newItemValue = newItemValue;
-      }
-
-      const finalItem = getPrimeFactors(newItemValue);
+      // console.log(`New: ` + getPrimesValue(newItem));
+      // console.log(`New: ` + JSON.stringify(newItem, undefined, 2));
+      // console.log("");
 
       // Check the rule and pass to the correct other monkey
-      if (finalItem.includes(monkey.divisibleBy)) {
-        monkeys[monkey.trueMonkeyIdx].items.push(finalItem);
+      if (Object.keys(newItem).map(p => +p).includes(monkey.divisibleBy)) {
+        monkeys[monkey.trueMonkeyIdx].items.push(newItem);
       } else {
-        monkeys[monkey.falseMonkeyIdx].items.push(finalItem);
+        monkeys[monkey.falseMonkeyIdx].items.push(newItem);
       }
     };
   });
 }
 
-function getPrimeFactors(number: number) {
+function getPrimeFactors(number: number): Primes {
   const factors = [];
   let divisor = 2;
 
@@ -123,9 +141,17 @@ function getPrimeFactors(number: number) {
       divisor++;
     }
   }
-  return factors;
+  const primes: Primes = {};
+  factors.forEach(factor => {
+    factor in primes ? primes[factor] += 1 : primes[factor] = 1;
+  });
+  return primes;
 }
 
-function getItemValue(item: number[]): number {
-  return item.reduce(function (product, value) { return product * value; });
+function getPrimesValue(primes: Primes): number {
+  let value = 1;
+  for (const [prime, power] of Object.entries(primes)) {
+    value *= (+prime) ** power;
+  }
+  return value;
 }
