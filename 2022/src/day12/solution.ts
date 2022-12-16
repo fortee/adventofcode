@@ -97,7 +97,7 @@ function traverseMap(point: Point, part: number): Point | undefined {
   for (const neighbor of neighbors) {
 
     if (neighbor.pathVia === undefined || neighbor.distance > point.distance + 1) {
-      // Update the neighbor data if it was nto set already or
+      // Update the neighbor data if it was not set already or
       // our current path would be faster
       neighbor.pathVia = point;
       neighbor.distance = point.distance + 1;
@@ -109,16 +109,15 @@ function traverseMap(point: Point, part: number): Point | undefined {
 
   };
 
-  // As we already explored all of the neighbors if this point
-  // mark it as visited
-  visitedPoints.push(point);
+  // As we already explored all of the neighbors if this point, mark it as visited
+  markPointAsVisited(point);
 
   // Sort all the points based on distance not that the current points neighbors were updated
   sortPoints();
 
   // Run move recursively from the closest point 
-  const nextPoint = getNextPoint();
-  const result = traverseMap(nextPoint, part);
+  const result = traverseMap(map.orderedPoints[0], part);
+
   // If we found the end return it, or return undefined
   if (result !== undefined) {
     return result;
@@ -140,7 +139,7 @@ function getNeighbors(point: Point, part: number): Point[] {
       if (!(x === 0 && y === 0) && (x === 0 || y === 0) && coordinates in map.points) {
         // You can move exactly one square up, down, left, or right.
         const neighbor = map.points[coordinates];
-        
+
         // We should not re-visit points
         if (visitedPoints.includes(neighbor)) return;
 
@@ -247,16 +246,14 @@ function draw(showVisited = false, startX = 1000, startY = 1000, size = 5000): v
 const pad = (str: string, length = 10, char = ' ') => str.padStart((str.length + length) / 2, char).padEnd(length, char);
 
 /**
- * Get the next point from the priority list that is not yet marked as visited
- * @returns 
+ * Set the point as visited and remove it from the ordered points as there is no need to keep it there
+ * @param point = The Point we want to mark as visited
  */
-function getNextPoint(): Point {
-  for (const point of map.orderedPoints) {
-    if (!visitedPoints.includes(point)) {
-      return point;
-    }
-  }
-  return map.orderedPoints[0];
+function markPointAsVisited(point: Point): void {
+  // Add the point to the visited list 
+  visitedPoints.push(point);
+  // Remove it from the list, this makes the script run order of magnitudes faster!
+  map.orderedPoints = map.orderedPoints.filter(p => p.coordinates !== point.coordinates);
 }
 /**
  * Sort the points based on their distance to the start
