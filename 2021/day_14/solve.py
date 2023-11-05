@@ -1,5 +1,16 @@
 from collections import Counter
-from collections import OrderedDict
+
+import argparse
+
+# Create the parser
+parser = argparse.ArgumentParser(description="Process the steps.")
+
+# Add the integer argument
+parser.add_argument('steps', type=int, help='Number of steps')
+
+# Parse the arguments
+args = parser.parse_args()
+steps = args.steps
 
 with open(r"input") as file:
     data = file.read()
@@ -25,6 +36,7 @@ CN -> C"""
 split = data.split('\n\n')
 poli = split[0]
 pairs = {}
+total_calls = 0
 
 
 # Create a dict that will give the new inserted value based on the key
@@ -35,22 +47,14 @@ for pair in split[1].split('\n'):
     key = pair_split[0]
     pairs[key] = f"{key[0]}{pair_split[1]}{key[1]}"
 
-knowns = {}
-
-for i in range(10):
+poli = "NNCB"
+for i in range(steps):
     new_poli = poli[0]
-
-    # for key, val in knowns.items():
-    #     if key in poli:
-    
-    from datetime import datetime
-    st = datetime.now()
-    
     for idx in range(len(poli) - 1):
+        total_calls +=1
         new_poli += pairs[poli[idx : idx + 2]][1:]
-    print(f"R{i+1}: {datetime.now() - st}")
-    knowns[poli] = new_poli
     poli = new_poli
 
+print(f"TOTAL CALLS: {total_calls}")
 char_count = dict(Counter(poli))
 print(max(char_count.values()) - min(char_count.values()))
