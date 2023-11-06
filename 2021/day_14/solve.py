@@ -55,6 +55,12 @@ for i in range(steps):
         new_poli += pairs[poli[idx : idx + 2]][1:]
     poli = new_poli
 
+
+
 print(f"TOTAL CALLS: {total_calls}")
 char_count = dict(Counter(poli))
-print(max(char_count.values()) - min(char_count.values()))
+cmax = max(char_count.values())
+cmin =  min(char_count.values())
+print(f"MAX: {cmax}")
+print(f"MIN: {cmin}")
+print(f"Solution after {steps} rounds: {cmax- cmin}")
